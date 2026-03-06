@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Games</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    color:white;
+    background-color:#0b0b0b;
+
+    /* grid background */
+    background-image:
+    linear-gradient(#1a1a1a 1px, transparent 1px),
+    linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size:40px 40px;
+
+    text-align:center;
+}
+
+/* custom cursor */
+body{
+    cursor:crosshair;
+}
+
+h1{
+    margin-top:40px;
+    font-size:40px;
+}
+
+#search{
+    margin-top:20px;
+    padding:12px;
+    width:300px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    font-size:16px;
+    background:#111;
+    color:white;
+    box-shadow:0 0 10px rgba(255,255,255,0.1);
+}
+
+/* grid layout for games */
+#gameList{
+    margin:60px auto;
+    width:90%;
+
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:25px;
+}
+
+/* game cards */
+
+.game{
+    background:#111;
+    padding:20px;
+    border-radius:10px;
+    cursor:pointer;
+
+    transition:0.2s;
+
+    border:1px solid transparent;
+}
+
+.game:hover{
+
+    transform:scale(1.1);
+
+    border:1px solid white;
+
+    box-shadow:0 0 15px rgba(255,255,255,0.3);
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Games</h1>
+
+<input id="search" type="text" placeholder="Search games...">
+
+<div id="gameList"></div>
+
+<script>
+
+const games = [
+{name:"Game 1",url:"PUT_URL_HERE"},
+{name:"Game 2",url:"PUT_URL_HERE"},
+{name:"Game 3",url:"PUT_URL_HERE"},
+{name:"Game 4",url:"PUT_URL_HERE"},
+{name:"Game 5",url:"PUT_URL_HERE"},
+{name:"Game 6",url:"PUT_URL_HERE"},
+{name:"Game 7",url:"PUT_URL_HERE"},
+{name:"Game 8",url:"PUT_URL_HERE"},
+{name:"Game 9",url:"PUT_URL_HERE"},
+{name:"Game 10",url:"PUT_URL_HERE"},
+{name:"Game 11",url:"PUT_URL_HERE"},
+{name:"Game 12",url:"PUT_URL_HERE"},
+{name:"Game 13",url:"PUT_URL_HERE"},
+{name:"Game 14",url:"PUT_URL_HERE"},
+{name:"Game 15",url:"PUT_URL_HERE"},
+{name:"Game 16",url:"PUT_URL_HERE"},
+{name:"Game 17",url:"PUT_URL_HERE"},
+{name:"Game 18",url:"PUT_URL_HERE"},
+{name:"Game 19",url:"PUT_URL_HERE"},
+{name:"Game 20",url:"PUT_URL_HERE"},
+{name:"Game 21",url:"PUT_URL_HERE"},
+{name:"Game 22",url:"PUT_URL_HERE"},
+{name:"Game 23",url:"PUT_URL_HERE"},
+{name:"Game 24",url:"PUT_URL_HERE"},
+{name:"Game 25",url:"PUT_URL_HERE"},
+{name:"Game 26",url:"PUT_URL_HERE"},
+{name:"Game 27",url:"PUT_URL_HERE"},
+{name:"Game 28",url:"PUT_URL_HERE"},
+{name:"Game 29",url:"PUT_URL_HERE"},
+{name:"Game 30",url:"PUT_URL_HERE"},
+{name:"Game 31",url:"PUT_URL_HERE"},
+{name:"Game 32",url:"PUT_URL_HERE"},
+{name:"Game 33",url:"PUT_URL_HERE"},
+{name:"Game 34",url:"PUT_URL_HERE"},
+{name:"Game 35",url:"PUT_URL_HERE"},
+{name:"Game 36",url:"PUT_URL_HERE"},
+{name:"Game 37",url:"PUT_URL_HERE"},
+{name:"Game 38",url:"PUT_URL_HERE"},
+{name:"Game 39",url:"PUT_URL_HERE"},
+{name:"Game 40",url:"PUT_URL_HERE"},
+{name:"Game 41",url:"PUT_URL_HERE"},
+{name:"Game 42",url:"PUT_URL_HERE"},
+{name:"Game 43",url:"PUT_URL_HERE"},
+{name:"Game 44",url:"PUT_URL_HERE"},
+{name:"Game 45",url:"PUT_URL_HERE"},
+{name:"Game 46",url:"PUT_URL_HERE"},
+{name:"Game 47",url:"PUT_URL_HERE"},
+{name:"Game 48",url:"PUT_URL_HERE"},
+{name:"Game 49",url:"PUT_URL_HERE"},
+{name:"Game 50",url:"PUT_URL_HERE"}
+];
+
+const list = document.getElementById("gameList");
+
+function renderGames(filter=""){
+    list.innerHTML="";
+
+    games
+    .filter(game=>game.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(game=>{
+
+        const div=document.createElement("div");
+        div.className="game";
+        div.innerText=game.name;
+
+        div.onclick=()=>window.open(game.url,"_blank");
+
+        list.appendChild(div);
+
+    });
+}
+
+renderGames();
+
+document.getElementById("search").addEventListener("input",(e)=>{
+    renderGames(e.target.value);
+});
+
+</script>
+
+</body>
+</html>
