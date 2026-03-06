@@ -5,137 +5,99 @@
 <title>Game Hub</title>
 <style>
 body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#0b0b0b;
-color:white;
-overflow-x:hidden;
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0b0b0b;
+  color:white;
+  overflow-x:hidden;
 }
 
 /* GRID BACKGROUND */
 #grid{
-position:fixed;
-width:100%;
-height:100%;
-background-image:
-linear-gradient(#1a1a1a 1px, transparent 1px),
-linear-gradient(90deg,#1a1a1a 1px, transparent 1px);
-background-size:40px 40px;
-z-index:-1;
-transition:0.1s;
+  position:fixed;
+  width:100%;
+  height:100%;
+  background-image:
+    linear-gradient(#1a1a1a 1px, transparent 1px),
+    linear-gradient(90deg,#1a1a1a 1px, transparent 1px);
+  background-size:40px 40px;
+  z-index:-1;
+  transition:0.1s;
 }
 
 /* HEADER */
 header{
-text-align:center;
-font-size:32px;
-padding:20px;
+  text-align:center;
+  font-size:32px;
+  padding:20px;
 }
 
 /* SEARCH */
 #search{
-display:block;
-margin:auto;
-margin-bottom:20px;
-padding:10px;
-width:300px;
-border-radius:6px;
-border:none;
-background:#111;
-color:white;
+  display:block;
+  margin:auto;
+  margin-bottom:20px;
+  padding:10px;
+  width:300px;
+  border-radius:6px;
+  border:none;
+  background:#111;
+  color:white;
 }
 
 /* GAME GRID */
 .games{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-gap:15px;
-padding:30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:15px;
+  padding:30px;
 }
 
 .game{
-background:#111;
-padding:18px;
-text-align:center;
-border-radius:8px;
-cursor:pointer;
-transition:0.2s;
+  background:#111;
+  padding:18px;
+  text-align:center;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
 }
 
 .game:hover{
-transform:scale(1.15);
-filter:brightness(1.5);
-background:#222;
+  transform:scale(1.15);
+  filter:brightness(1.5);
+  background:#222;
 }
 
-/* FULLSCREEN GAME PLAYER */
+/* FULLSCREEN IFRAME */
 #player{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:black;
-display:none;
-flex-direction:column;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:none;
+  background:black;
+  flex-direction:column;
+  z-index:10;
 }
 
 #player iframe{
-width:100%;
-height:100%;
-border:none;
+  width:100%;
+  height:100%;
+  border:none;
 }
 
+/* CLOSE BUTTON BOTTOM LEFT */
 #close{
-position:absolute;
-top:10px;
-right:20px;
-font-size:20px;
-cursor:pointer;
-background:#111;
-padding:10px;
-border-radius:6px;
-}
-
-/* SETTINGS */
-#settingsBtn{
-position:fixed;
-top:15px;
-right:20px;
-cursor:pointer;
-}
-
-#settings{
-position:fixed;
-right:-280px;
-top:0;
-width:280px;
-height:100%;
-background:#111;
-padding:20px;
-transition:0.3s;
-}
-
-#settings.open{
-right:0;
-}
-
-input{
-width:100%;
-padding:8px;
-margin-top:10px;
-background:#222;
-border:none;
-color:white;
-}
-
-button{
-margin-top:10px;
-padding:10px;
-background:#333;
-border:none;
-color:white;
-cursor:pointer;
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  font-size:18px;
+  padding:10px;
+  background:#111;
+  border-radius:6px;
+  cursor:pointer;
+  z-index:20;
 }
 </style>
 </head>
@@ -145,39 +107,28 @@ cursor:pointer;
 
 <header>Game Hub</header>
 
-<div id="settingsBtn">⚙</div>
-
 <input id="search" placeholder="Search games...">
 
 <div class="games" id="games"></div>
 
 <div id="player">
-<div id="close">✕ Close</div>
-<iframe id="gameFrame"></iframe>
-</div>
-
-<div id="settings">
-<h3>Settings</h3>
-<label>Panic URL</label>
-<input id="panicURL" placeholder="https://google.com">
-<button onclick="saveSettings()">Save</button>
-<button onclick="panic()">Panic</button>
+  <iframe id="gameFrame"></iframe>
+  <div id="close">✕ Close</div>
 </div>
 
 <script>
-
-    /* GAME LIST */
+/* 50+ GAMES WITH ACTUAL URLs */
 const games=[
-{name:"Eaglercraft",url:"https://eaglercraft.app/web/"},
-{name:"bonk io",url:"Bonk.io"},
-{name:"Traffic road",url:"https://azgames.io/traffic-road.embed"},
+{name:"Eagkercraft",url:"https://eaglercraft.app/web/"},
+{name:"Ragdoll Playground",url:"https://game.azgame.io/ragdoll-playground/"},
+{name:"Taproad",url:"https://azgames.io/tap-road.embed},
 {name:"Slope",url:"https://slopegame.io/"},
 {name:"Run 3",url:"https://run3.io/"},
-{name:"Ice baby quest",url:"https://gamea.azgame.io/ice-baby-quest/"},
-{name:"Tap Road",url:"https://azgames.io/tap-road.embed"},
-{name:"Ragdoll Playground",url:"https://game.azgame.io/ragdoll-playground/"},
+{name:"Undead Corridor",url:"https://azgames.io/tap-road.embed"},
+{name:"Bucket smash",url:"https://krunker.io"},
+{name:"ice baby quest",url:"https://gamea.azgame.io/ice-baby-quest/"},
 {name:"Stickman Hook",url:"https://stickmanhook.io"},
-{name:"Tunnel Rush",url:"https://tunnelrush.io/"},
+{name:"Tunnel Rush",url:"https://tunnelrush.io"},
 {name:"Happy Wheels",url:"https://totaljerkface.com/happy_wheels.tjf"},
 {name:"Subway Surfers",url:"https://subwaysurfersgame.io"},
 {name:"Moto X3M",url:"https://motox3m.co"},
@@ -220,86 +171,37 @@ const games=[
 {name:"BitLife",url:"https://bitlifeonline.io"}
 ];
 
-/* FAVORITES SYSTEM */
-let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+/* RENDER GAMES */
+const container=document.getElementById("games");
+games.forEach(g=>{
+  let div=document.createElement("div");
+  div.className="game";
+  div.innerText=g.name;
+  div.onclick = ()=>{
+    document.getElementById("player").style.display="flex";
+    document.getElementById("gameFrame").src = g.url;
+  };
+  container.appendChild(div);
+});
 
-function saveFavorites(){
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-}
-
-function renderGames(){
-  const container = document.getElementById("games");
-  container.innerHTML="";
-
-  games.forEach(g=>{
-    const div=document.createElement("div");
-    div.className="game";
-
-    let star = favorites.includes(g.name) ? "⭐" : "☆";
-
-    div.innerHTML = `
-      <span onclick="toggleFav(event,'${g.name}')">${star}</span>
-      ${g.name}
-    `;
-
-    div.onclick = ()=>{
-      document.getElementById("player").style.display="flex";
-      document.getElementById("gameFrame").src=g.url;
-    };
-
-    container.appendChild(div);
-  });
-}
-
-function toggleFav(e,name){
-  e.stopPropagation();
-  if(favorites.includes(name)){
-    favorites = favorites.filter(f=>f!==name);
-  }else{
-    favorites.push(name);
-  }
-  saveFavorites();
-  renderGames();
-}
-
-renderGames();
-
-
-    /* SEARCH BAR */
-document.getElementById("search").addEventListener("input", function() {
-  let val = this.value.toLowerCase();
-  document.querySelectorAll(".game").forEach(g => {
-    g.style.display = g.innerText.toLowerCase().includes(val) ? "block" : "none";
+/* SEARCH FUNCTION */
+document.getElementById("search").addEventListener("input", function(){
+  let val=this.value.toLowerCase();
+  document.querySelectorAll(".game").forEach(g=>{
+    g.style.display=g.innerText.toLowerCase().includes(val)?"block":"none";
   });
 });
 
-/* FULLSCREEN GAME PLAYER CLOSE BUTTON */
-document.getElementById("close").onclick = ()=>{
-  document.getElementById("player").style.display = "none";
-  document.getElementById("gameFrame").src = "";
+/* CLOSE BUTTON */
+document.getElementById("close").onclick=()=>{
+  document.getElementById("player").style.display="none";
+  document.getElementById("gameFrame").src="";
 };
 
-/* SETTINGS PANEL TOGGLE */
-const settings = document.getElementById("settings");
-document.getElementById("settingsBtn").onclick = ()=>{
-  settings.classList.toggle("open");
-};
-
-/* SAVE PANIC URL */
-function saveSettings(){
-  localStorage.setItem("panicURL", document.getElementById("panicURL").value);
-}
-
-/* PANIC BUTTON */
-function panic(){
-  let url = localStorage.getItem("panicURL");
-  if(url) window.location.href = url;
-}
-
-/* REACTIVE GRID BACKGROUND */
+/* REACTIVE GRID */
 document.addEventListener("mousemove", e=>{
-  const grid = document.getElementById("grid");
-  grid.style.backgroundPosition = (e.clientX/25) + "px " + (e.clientY/25) + "px";
+  const grid=document.getElementById("grid");
+  grid.style.backgroundPosition=(e.clientX/25)+"px "+(e.clientY/25)+"px";
 });
 </script>
 </body>
