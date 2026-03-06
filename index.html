@@ -47,32 +47,57 @@ h1{
 #gameList{
     margin:60px auto;
     width:90%;
-
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
     gap:25px;
 }
 
 /* game cards */
-
 .game{
     background:#111;
     padding:20px;
     border-radius:10px;
     cursor:pointer;
-
     transition:0.2s;
-
     border:1px solid transparent;
 }
 
 .game:hover{
-
     transform:scale(1.1);
-
     border:1px solid white;
-
     box-shadow:0 0 15px rgba(255,255,255,0.3);
+}
+
+/* fullscreen iframe overlay */
+#gameFrameOverlay{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#000;
+    z-index:9999;
+}
+
+#gameFrameOverlay iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+
+#closeBtn{
+    position:absolute;
+    top:15px;
+    right:20px;
+    padding:10px 20px;
+    background:red;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
+    border-radius:5px;
+    z-index:10000;
 }
 
 </style>
@@ -86,62 +111,30 @@ h1{
 
 <div id="gameList"></div>
 
+<!-- Fullscreen game overlay -->
+<div id="gameFrameOverlay">
+    <button id="closeBtn">Close</button>
+    <iframe id="gameFrame" src="about:blank"></iframe>
+</div>
+
 <script>
 
 const games = [
 {name:"Eaglercraft",url:"https://eaglercraft.app/web/"},
 {name:"Bonk.IO",url:"https://bonk.io/"},
 {name:"Hitbox.IO",url:"https://hitbox.io/"},
-{name:"google snake",url:"https://google-snake-mods.pages.dev/v/current/"},
+{name:"Google Snake",url:"https://google-snake-mods.pages.dev/v/current/"},
 {name:"Slope",url:"https://slope-inf.vercel.app/"},
-{name:"Bucket smash",url:"https://gamea.azgame.io/bucket-smash/"},
-{name:"Tap Rode",url:"https://azgames.io/tap-road.embed"},
+{name:"Bucket Smash",url:"https://gamea.azgame.io/bucket-smash/"},
+{name:"Tap Road",url:"https://azgames.io/tap-road.embed"},
 {name:"Ice Baby Quest",url:"https://gamea.azgame.io/ice-baby-quest/"},
-{name:"Game 9",url:"PUT_URL_HERE"},
-{name:"Game 10",url:"PUT_URL_HERE"},
-{name:"Game 11",url:"PUT_URL_HERE"},
-{name:"Game 12",url:"PUT_URL_HERE"},
-{name:"Game 13",url:"PUT_URL_HERE"},
-{name:"Game 14",url:"PUT_URL_HERE"},
-{name:"Game 15",url:"PUT_URL_HERE"},
-{name:"Game 16",url:"PUT_URL_HERE"},
-{name:"Game 17",url:"PUT_URL_HERE"},
-{name:"Game 18",url:"PUT_URL_HERE"},
-{name:"Game 19",url:"PUT_URL_HERE"},
-{name:"Game 20",url:"PUT_URL_HERE"},
-{name:"Game 21",url:"PUT_URL_HERE"},
-{name:"Game 22",url:"PUT_URL_HERE"},
-{name:"Game 23",url:"PUT_URL_HERE"},
-{name:"Game 24",url:"PUT_URL_HERE"},
-{name:"Game 25",url:"PUT_URL_HERE"},
-{name:"Game 26",url:"PUT_URL_HERE"},
-{name:"Game 27",url:"PUT_URL_HERE"},
-{name:"Game 28",url:"PUT_URL_HERE"},
-{name:"Game 29",url:"PUT_URL_HERE"},
-{name:"Game 30",url:"PUT_URL_HERE"},
-{name:"Game 31",url:"PUT_URL_HERE"},
-{name:"Game 32",url:"PUT_URL_HERE"},
-{name:"Game 33",url:"PUT_URL_HERE"},
-{name:"Game 34",url:"PUT_URL_HERE"},
-{name:"Game 35",url:"PUT_URL_HERE"},
-{name:"Game 36",url:"PUT_URL_HERE"},
-{name:"Game 37",url:"PUT_URL_HERE"},
-{name:"Game 38",url:"PUT_URL_HERE"},
-{name:"Game 39",url:"PUT_URL_HERE"},
-{name:"Game 40",url:"PUT_URL_HERE"},
-{name:"Game 41",url:"PUT_URL_HERE"},
-{name:"Game 42",url:"PUT_URL_HERE"},
-{name:"Game 43",url:"PUT_URL_HERE"},
-{name:"Game 44",url:"PUT_URL_HERE"},
-{name:"Game 45",url:"PUT_URL_HERE"},
-{name:"Game 46",url:"PUT_URL_HERE"},
-{name:"Game 47",url:"PUT_URL_HERE"},
-{name:"Game 48",url:"PUT_URL_HERE"},
-{name:"Game 49",url:"PUT_URL_HERE"},
-{name:"Game 50",url:"PUT_URL_HERE"}
+// more games can go here
 ];
 
 const list = document.getElementById("gameList");
+const overlay = document.getElementById("gameFrameOverlay");
+const iframe = document.getElementById("gameFrame");
+const closeBtn = document.getElementById("closeBtn");
 
 function renderGames(filter=""){
     list.innerHTML="";
@@ -154,11 +147,21 @@ function renderGames(filter=""){
         div.className="game";
         div.innerText=game.name;
 
-        div.onclick=()=>window.open(game.url,"_blank");
+        // open in embedded iframe instead of new tab
+        div.onclick=()=>{
+            iframe.src = game.url;
+            overlay.style.display = "block";
+        }
 
         list.appendChild(div);
 
     });
+}
+
+// close overlay
+closeBtn.onclick = ()=>{
+    overlay.style.display = "none";
+    iframe.src = "about:blank";
 }
 
 renderGames();
