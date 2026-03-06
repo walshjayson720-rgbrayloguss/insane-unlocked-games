@@ -1,112 +1,306 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Games</title>
+<meta charset="UTF-8">
+<title>Game Hub</title>
 <style>
 body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    color:white;
-    background-color:#0b0b0b;
-    background-image:
-    linear-gradient(#1a1a1a 1px, transparent 1px),
-    linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
-    background-size:40px 40px;
-    text-align:center;
-    cursor:crosshair;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#0b0b0b;
+color:white;
+overflow-x:hidden;
 }
 
-h1{margin-top:40px;font-size:40px;}
-#search{margin-top:20px;padding:12px;width:300px;border-radius:8px;border:none;outline:none;font-size:16px;background:#111;color:white;box-shadow:0 0 10px rgba(255,255,255,0.1);}
-#gameList{margin:60px auto;width:90%;display:grid;grid-template-columns:repeat(auto-fill, minmax(150px,1fr));gap:25px;}
-.game{background:#111;padding:20px;border-radius:10px;cursor:pointer;transition:0.2s;border:1px solid transparent;}
-.game:hover{transform:scale(1.1);border:1px solid white;box-shadow:0 0 15px rgba(255,255,255,0.3);}
+/* GRID BACKGROUND */
+#grid{
+position:fixed;
+width:100%;
+height:100%;
+background-image:
+linear-gradient(#1a1a1a 1px, transparent 1px),
+linear-gradient(90deg,#1a1a1a 1px, transparent 1px);
+background-size:40px 40px;
+z-index:-1;
+transition:0.1s;
+}
 
-/* Fullscreen overlay */
-#gameFrameOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;}
-#gameFrameOverlay iframe{width:100%;height:100%;border:none;}
-#closeBtn{position:absolute;top:15px;right:20px;padding:10px 20px;background:red;color:white;font-weight:bold;cursor:pointer;border:none;border-radius:5px;z-index:10000;}
+/* HEADER */
+header{
+text-align:center;
+font-size:32px;
+padding:20px;
+}
+
+/* SEARCH */
+#search{
+display:block;
+margin:auto;
+margin-bottom:20px;
+padding:10px;
+width:300px;
+border-radius:6px;
+border:none;
+background:#111;
+color:white;
+}
+
+/* GAME GRID */
+.games{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+gap:15px;
+padding:30px;
+}
+
+.game{
+background:#111;
+padding:18px;
+text-align:center;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.game:hover{
+transform:scale(1.15);
+filter:brightness(1.5);
+background:#222;
+}
+
+/* FULLSCREEN GAME PLAYER */
+#player{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+flex-direction:column;
+}
+
+#player iframe{
+width:100%;
+height:100%;
+border:none;
+}
+
+#close{
+position:absolute;
+top:10px;
+right:20px;
+font-size:20px;
+cursor:pointer;
+background:#111;
+padding:10px;
+border-radius:6px;
+}
+
+/* SETTINGS */
+#settingsBtn{
+position:fixed;
+top:15px;
+right:20px;
+cursor:pointer;
+}
+
+#settings{
+position:fixed;
+right:-280px;
+top:0;
+width:280px;
+height:100%;
+background:#111;
+padding:20px;
+transition:0.3s;
+}
+
+#settings.open{
+right:0;
+}
+
+input{
+width:100%;
+padding:8px;
+margin-top:10px;
+background:#222;
+border:none;
+color:white;
+}
+
+button{
+margin-top:10px;
+padding:10px;
+background:#333;
+border:none;
+color:white;
+cursor:pointer;
+}
 </style>
 </head>
 <body>
 
-<h1>Games</h1>
-<input id="search" type="text" placeholder="Search games...">
-<div id="gameList"></div>
+<div id="grid"></div>
 
-<div id="gameFrameOverlay">
-    <button id="closeBtn">Close</button>
-    <iframe id="gameFrame" src="about:blank"></iframe>
+<header>Game Hub</header>
+
+<div id="settingsBtn">⚙</div>
+
+<input id="search" placeholder="Search games...">
+
+<div class="games" id="games"></div>
+
+<div id="player">
+<div id="close">✕ Close</div>
+<iframe id="gameFrame"></iframe>
+</div>
+
+<div id="settings">
+<h3>Settings</h3>
+<label>Panic URL</label>
+<input id="panicURL" placeholder="https://google.com">
+<button onclick="saveSettings()">Save</button>
+<button onclick="panic()">Panic</button>
 </div>
 
 <script>
-// Each game has a name and a function that injects content into the iframe
-const games = [
-{name:"Red Box",run:function(iframeDoc){
-    iframeDoc.body.innerHTML = '';
-    iframeDoc.body.style.margin='0'; iframeDoc.body.style.background='black';
-    const canvas=document.createElement('canvas'); iframeDoc.body.appendChild(canvas);
-    const ctx=canvas.getContext('2d');
-    canvas.width=iframeDoc.defaultView.innerWidth; canvas.height=iframeDoc.defaultView.innerHeight;
-    ctx.fillStyle='red'; ctx.fillRect(100,100,200,200);
-}},
 
-{name:"Blue Circle",run:function(iframeDoc){
-    iframeDoc.body.innerHTML = '';
-    iframeDoc.body.style.margin='0'; iframeDoc.body.style.background='black';
-    const canvas=document.createElement('canvas'); iframeDoc.body.appendChild(canvas);
-    const ctx=canvas.getContext('2d');
-    canvas.width=iframeDoc.defaultView.innerWidth; canvas.height=iframeDoc.defaultView.innerHeight;
-    ctx.fillStyle='blue'; ctx.beginPath(); ctx.arc(300,300,100,0,Math.PI*2); ctx.fill();
-}},
-
-{name:"Green Moving Box",run:function(iframeDoc){
-    iframeDoc.body.innerHTML = '';
-    iframeDoc.body.style.margin='0'; iframeDoc.body.style.background='black';
-    const canvas=document.createElement('canvas'); iframeDoc.body.appendChild(canvas);
-    const ctx=canvas.getContext('2d');
-    canvas.width=iframeDoc.defaultView.innerWidth; canvas.height=iframeDoc.defaultView.innerHeight;
-    let x=0;
-    function draw(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle='green';
-        ctx.fillRect(x,200,150,150);
-        x=(x+5)%canvas.width;
-        requestAnimationFrame(draw);
-    }
-    draw();
-}}
+    /* GAME LIST */
+const games=[
+{name:"2048",url:"https://play2048.co/"},
+{name:"Tetris",url:"https://tetris.com/play-tetris"},
+{name:"Pacman",url:"https://www.google.com/logos/2010/pacman10-i.html"},
+{name:"Slope",url:"https://slopegame.io/"},
+{name:"Run 3",url:"https://run3.io/"},
+{name:"Agar.io",url:"https://agar.io"},
+{name:"Krunker",url:"https://krunker.io"},
+{name:"Drift Boss",url:"https://driftboss.io"},
+{name:"Stickman Hook",url:"https://stickmanhook.io"},
+{name:"Tunnel Rush",url:"https://tunnelrush.io/"},
+{name:"Happy Wheels",url:"https://totaljerkface.com/happy_wheels.tjf"},
+{name:"Subway Surfers",url:"https://subwaysurfersgame.io"},
+{name:"Moto X3M",url:"https://motox3m.co"},
+{name:"Basketball Stars",url:"https://basketballstars.io"},
+{name:"Retro Bowl",url:"https://retrobowl.me"},
+{name:"Fireboy & Watergirl",url:"https://fireboyandwatergirl.io"},
+{name:"Zombs Royale",url:"https://zombsroyale.io"},
+{name:"Cookie Clicker",url:"https://orteil.dashnet.org/cookieclicker"},
+{name:"Paper.io",url:"https://paper-io.com"},
+{name:"Hole.io",url:"https://hole-io.com"},
+{name:"Crossy Road",url:"https://crossyroadgame.io"},
+{name:"Flappy Bird",url:"https://flappybird.io"},
+{name:"Chess",url:"https://chess.com"},
+{name:"Checkers",url:"https://cardgames.io/checkers/"},
+{name:"Snake",url:"https://playsnake.org"},
+{name:"Sudoku",url:"https://sudoku.com"},
+{name:"Minesweeper",url:"https://minesweeperonline.com"},
+{name:"Solitaire",url:"https://solitr.com"},
+{name:"Wordle",url:"https://nytimes.com/games/wordle"},
+{name:"Connect 4",url:"https://connect4.io"},
+{name:"Drive Mad",url:"https://drivemad.io"},
+{name:"Rooftop Snipers",url:"https://rooftopsnipers.io"},
+{name:"Getaway Shootout",url:"https://getawayshootout.io"},
+{name:"Vex 6",url:"https://vex6.io"},
+{name:"Vex 7",url:"https://vex7.io"},
+{name:"Tank Trouble",url:"https://tanktrouble.com"},
+{name:"Tiny Fishing",url:"https://tinyfishing.io"},
+{name:"Temple Run",url:"https://templerun.io"},
+{name:"Stack",url:"https://stackgame.io"},
+{name:"Idle Breakout",url:"https://idlebreakout.com"},
+{name:"Bloons TD",url:"https://bloonstd.io"},
+{name:"Plants vs Zombies",url:"https://pvz-online.com"},
+{name:"Duck Life",url:"https://ducklife.io"},
+{name:"Geometry Dash",url:"https://geometrydash.io"},
+{name:"Soccer Random",url:"https://soccerrandom.io"},
+{name:"Madalin Cars",url:"https://madalinstuntcars2.io"},
+{name:"Run",url:"https://run-game.io"},
+{name:"FNAF",url:"https://fnaf-online.com"},
+{name:"Among Us",url:"https://amongusplay.online"},
+{name:"BitLife",url:"https://bitlifeonline.io"}
 ];
 
-const list = document.getElementById("gameList");
-const overlay = document.getElementById("gameFrameOverlay");
-const iframe = document.getElementById("gameFrame");
-const closeBtn = document.getElementById("closeBtn");
+/* FAVORITES SYSTEM */
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-function renderGames(filter=""){
-    list.innerHTML="";
-    games.filter(game=>game.name.toLowerCase().includes(filter.toLowerCase()))
-         .forEach(game=>{
-             const div=document.createElement("div");
-             div.className="game"; div.innerText=game.name;
-             div.onclick=()=>{
-                 overlay.style.display="block";
-                 const doc = iframe.contentWindow.document;
-                 doc.open(); doc.write('<body></body>'); doc.close();
-                 game.run(doc); // inject the game code
-             }
-             list.appendChild(div);
-         });
+function saveFavorites(){
+  localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
-closeBtn.onclick = ()=>{
-    overlay.style.display="none";
-    iframe.src="about:blank";
+function renderGames(){
+  const container = document.getElementById("games");
+  container.innerHTML="";
+
+  games.forEach(g=>{
+    const div=document.createElement("div");
+    div.className="game";
+
+    let star = favorites.includes(g.name) ? "⭐" : "☆";
+
+    div.innerHTML = `
+      <span onclick="toggleFav(event,'${g.name}')">${star}</span>
+      ${g.name}
+    `;
+
+    div.onclick = ()=>{
+      document.getElementById("player").style.display="flex";
+      document.getElementById("gameFrame").src=g.url;
+    };
+
+    container.appendChild(div);
+  });
+}
+
+function toggleFav(e,name){
+  e.stopPropagation();
+  if(favorites.includes(name)){
+    favorites = favorites.filter(f=>f!==name);
+  }else{
+    favorites.push(name);
+  }
+  saveFavorites();
+  renderGames();
 }
 
 renderGames();
-document.getElementById("search").addEventListener("input",(e)=>renderGames(e.target.value));
 
+
+    /* SEARCH BAR */
+document.getElementById("search").addEventListener("input", function() {
+  let val = this.value.toLowerCase();
+  document.querySelectorAll(".game").forEach(g => {
+    g.style.display = g.innerText.toLowerCase().includes(val) ? "block" : "none";
+  });
+});
+
+/* FULLSCREEN GAME PLAYER CLOSE BUTTON */
+document.getElementById("close").onclick = ()=>{
+  document.getElementById("player").style.display = "none";
+  document.getElementById("gameFrame").src = "";
+};
+
+/* SETTINGS PANEL TOGGLE */
+const settings = document.getElementById("settings");
+document.getElementById("settingsBtn").onclick = ()=>{
+  settings.classList.toggle("open");
+};
+
+/* SAVE PANIC URL */
+function saveSettings(){
+  localStorage.setItem("panicURL", document.getElementById("panicURL").value);
+}
+
+/* PANIC BUTTON */
+function panic(){
+  let url = localStorage.getItem("panicURL");
+  if(url) window.location.href = url;
+}
+
+/* REACTIVE GRID BACKGROUND */
+document.addEventListener("mousemove", e=>{
+  const grid = document.getElementById("grid");
+  grid.style.backgroundPosition = (e.clientX/25) + "px " + (e.clientY/25) + "px";
+});
 </script>
 </body>
 </html>
