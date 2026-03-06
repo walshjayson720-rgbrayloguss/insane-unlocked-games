@@ -1,47 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Games</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    color:white;
+    background-color:#0b0b0b;
+    background-image:
+    linear-gradient(#1a1a1a 1px, transparent 1px),
+    linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size:40px 40px;
+    text-align:center;
+    cursor:crosshair;
+}
+
+h1{margin-top:40px;font-size:40px;}
+#search{margin-top:20px;padding:12px;width:300px;border-radius:8px;border:none;outline:none;font-size:16px;background:#111;color:white;box-shadow:0 0 10px rgba(255,255,255,0.1);}
+#gameList{margin:60px auto;width:90%;display:grid;grid-template-columns:repeat(auto-fill, minmax(150px,1fr));gap:25px;}
+.game{background:#111;padding:20px;border-radius:10px;cursor:pointer;transition:0.2s;border:1px solid transparent;}
+.game:hover{transform:scale(1.1);border:1px solid white;box-shadow:0 0 15px rgba(255,255,255,0.3);}
+
+/* Fullscreen overlay */
+#gameFrameOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;}
+#gameFrameOverlay iframe{width:100%;height:100%;border:none;}
+#closeBtn{position:absolute;top:15px;right:20px;padding:10px 20px;background:red;color:white;font-weight:bold;cursor:pointer;border:none;border-radius:5px;z-index:10000;}
+</style>
+</head>
+<body>
+
+<h1>Games</h1>
+<input id="search" type="text" placeholder="Search games...">
+<div id="gameList"></div>
+
 <div id="gameFrameOverlay">
-  <button id="closeBtn">Close</button>
-  <iframe id="gameFrame" src="about:blank"></iframe>
+    <button id="closeBtn">Close</button>
+    <iframe id="gameFrame" src="about:blank"></iframe>
 </div>
 
 <script>
+// Each game has a name and embedded HTML code
+const games = [
+{name:"Red Box",html:`
+  <!DOCTYPE html>
+  <html><body style="margin:0;background:black">
+    <canvas id="c"></canvas>
+    <script>
+      const canvas=document.getElementById('c');
+      const ctx=canvas.getContext('2d');
+      canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+      ctx.fillStyle='red'; ctx.fillRect(100,100,200,200);
+    </script>
+  </body></html>`},
+
+{name:"Blue Circle",html:`
+  <!DOCTYPE html>
+  <html><body style="margin:0;background:black">
+    <canvas id="c"></canvas>
+    <script>
+      const canvas=document.getElementById('c');
+      const ctx=canvas.getContext('2d');
+      canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+      ctx.fillStyle='blue'; ctx.beginPath(); ctx.arc(300,300,100,0,Math.PI*2); ctx.fill();
+    </script>
+  </body></html>`},
+
+{name:"Green Moving Box",html:`
+  <!DOCTYPE html>
+  <html><body style="margin:0;background:black">
+    <canvas id="c"></canvas>
+    <script>
+      const canvas=document.getElementById('c');
+      const ctx=canvas.getContext('2d');
+      canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+      let x=0;
+      function draw(){ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='green'; ctx.fillRect(x,200,150,150); x=(x+5)%canvas.width; requestAnimationFrame(draw);}
+      draw();
+    </script>
+  </body></html>`}
+];
+
+const list = document.getElementById("gameList");
 const overlay = document.getElementById("gameFrameOverlay");
 const iframe = document.getElementById("gameFrame");
 const closeBtn = document.getElementById("closeBtn");
 
-// Example: your game HTML+JS as a string
-const exampleGameHTML = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <style>body{margin:0;background:black;}canvas{display:block;}</style>
-  </head>
-  <body>
-    <canvas id="gameCanvas"></canvas>
-    <script>
-      const canvas=document.getElementById('gameCanvas');
-      const ctx=canvas.getContext('2d');
-      canvas.width=window.innerWidth;
-      canvas.height=window.innerHeight;
-      ctx.fillStyle='red';
-      ctx.fillRect(100,100,200,200); // simple red box example
-    </script>
-  </body>
-  </html>
-`;
-
-function openGame() {
-  overlay.style.display="block";
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(exampleGameHTML);
-  doc.close();
+function renderGames(filter=""){
+    list.innerHTML="";
+    games.filter(game=>game.name.toLowerCase().includes(filter.toLowerCase()))
+         .forEach(game=>{
+             const div=document.createElement("div");
+             div.className="game"; div.innerText=game.name;
+             div.onclick=()=>{
+                 overlay.style.display="block";
+                 const doc = iframe.contentWindow.document;
+                 doc.open(); doc.write(game.html); doc.close();
+             }
+             list.appendChild(div);
+         });
 }
 
-closeBtn.onclick = () => {
-  overlay.style.display="none";
-  iframe.src = "about:blank";
+closeBtn.onclick = ()=>{
+    overlay.style.display="none";
+    iframe.src="about:blank";
 }
 
-// Open the example game for demo
-// openGame(); 
+renderGames();
+document.getElementById("search").addEventListener("input",(e)=>renderGames(e.target.value));
+
 </script>
+
+</body>
+</html>
